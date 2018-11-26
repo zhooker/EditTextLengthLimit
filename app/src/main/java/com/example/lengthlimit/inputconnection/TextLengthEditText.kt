@@ -48,7 +48,7 @@ class TextLengthEditText : AppCompatEditText, TextLengthListener {
                 val delete = Utils.getDeleteIndex(source, 0, source.length, sum)
                 if (delete >= 0) {
                     listener?.onTextLengthOutOfLimit()
-                    return super.commitText(source.subSequence(0, delete), newCursorPosition)
+                    return super.commitText(if (delete > 0) source.subSequence(0, delete) else "", newCursorPosition)
                 }
             }
             return super.commitText(source, newCursorPosition)

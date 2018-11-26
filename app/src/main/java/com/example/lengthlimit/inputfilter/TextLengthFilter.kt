@@ -31,7 +31,7 @@ class TextLengthFilter(private val maxLength: Int = Utils.MAX_LENGTH, val listen
             val delete = Utils.getDeleteIndex(source, 0, source.length, sum)
             if (delete >= 0) {
                 listener?.onTextLengthOutOfLimit()
-                return source.subSequence(0, delete)
+                return if (delete > 0) source.subSequence(0, delete) else ""
             }
         }
 
