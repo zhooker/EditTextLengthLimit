@@ -4,6 +4,7 @@ import android.text.InputFilter
 import android.text.Spanned
 import com.example.lengthlimit.util.TextLengthListener
 import com.example.lengthlimit.util.Utils
+import kotlin.contracts.contract
 
 /**
  *
@@ -24,36 +25,17 @@ class TextLengthFilter(private val maxLength: Int = Utils.MAX_LENGTH, val listen
         }
 
         val source: CharSequence = source.subSequence(start, end)
-        var sum = maxLength - getCharSequenceLength(dest as CharSequence, dstart, dend)
+        var sum = Utils.calcTextLength(dest as CharSequence, dstart, dend) + Utils.calcTextLength(source) - maxLength
         if (sum > 0) {
-            source.forEachIndexed { index, c ->
-                val count = Utils.getCharTextCount(c)
-                if (sum - count < 0) {
-                    listener?.onTextLengthOutOfLimit()
-                    return source.subSequence(0, index) // 输入字符超过了限制，截取
-                }
-
-                sum -= count
-            }
-            // 没有超过限制，直接返回source
-            return source
-        } else {
-            // 已经超过了限制，直接提示
-            listener?.onTextLengthOutOfLimit()
-            return ""
-        }
-    }
-
-    /**
-     * 计算除了[dstart,dend]外的字符数
-     */
-    private fun getCharSequenceLength(source: CharSequence, dstart: Int, dend: Int): Int {
-        var count = 0
-        source.forEachIndexed { index, c ->
-            if (index !in dstart..dend) {
-                count += Utils.getCharTextCount(c)
+            // 输入字符超过了限制，截取
+            val delete = Utils.getDeleteIndex(source, 0, source.length, sum)
+            if (delete >= 0) {
+                listener?.onTextLengthOutOfLimit()
+                return source.subSequence(0, delete)
             }
         }
-        return count
+
+        // 没有超过限制，直接返回source
+        return source
     }
 }

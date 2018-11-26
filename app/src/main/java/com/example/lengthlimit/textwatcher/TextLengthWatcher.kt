@@ -21,16 +21,12 @@ class TextLengthWatcher(private val maxLength: Int = Utils.MAX_LENGTH, val liste
         if (count > maxLength) {
             // 超过了sum个字符，需要截取
             var sum = count - maxLength
-            for (index in dEnd - 1 downTo dStart) {
-                sum -= Utils.getCharTextCount(s[index])
-                if (sum <= 0) {
-                    // 输入字符超过了限制，截取
-                    s.delete(index, dEnd)
-                    break
-                }
+            // 输入字符超过了限制，截取
+            val delete = Utils.getDeleteIndex(s, dStart, dEnd, sum)
+            if (delete >= 0) {
+                listener?.onTextLengthOutOfLimit()
+                s.delete(delete, dEnd)
             }
-
-            listener?.onTextLengthOutOfLimit()
         }
     }
 

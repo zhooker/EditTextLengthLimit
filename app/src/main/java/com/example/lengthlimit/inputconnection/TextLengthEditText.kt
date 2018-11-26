@@ -40,17 +40,15 @@ class TextLengthEditText : AppCompatEditText, TextLengthListener {
 
         override fun commitText(source: CharSequence, newCursorPosition: Int): Boolean {
             val count = Utils.calcTextLength(source)
-            val destCount = Utils.calcTextLength(text)
+            val destCount = Utils.calcTextLength(text as CharSequence, selectionStart, selectionEnd)
             if (count + destCount > maxLength) {
                 // 超过了sum个字符，需要截取
                 var sum = count + destCount - maxLength
-                for (index in source.length - 1 downTo 0) {
-                    sum -= Utils.getCharTextCount(source[index])
-                    if (sum <= 0) {
-                        listener?.onTextLengthOutOfLimit()
-                        // 输入字符超过了限制，截取
-                        return super.commitText(source.subSequence(0, index), newCursorPosition)
-                    }
+                // 输入字符超过了限制，截取
+                val delete = Utils.getDeleteIndex(source, 0, source.length, sum)
+                if (delete >= 0) {
+                    listener?.onTextLengthOutOfLimit()
+                    return super.commitText(source.subSequence(0, delete), newCursorPosition)
                 }
             }
             return super.commitText(source, newCursorPosition)
