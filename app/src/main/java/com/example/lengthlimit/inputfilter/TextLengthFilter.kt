@@ -4,7 +4,6 @@ import android.text.InputFilter
 import android.text.Spanned
 import com.example.lengthlimit.util.TextLengthListener
 import com.example.lengthlimit.util.Utils
-import kotlin.contracts.contract
 
 /**
  *
@@ -24,15 +23,14 @@ class TextLengthFilter(private val maxLength: Int = Utils.MAX_LENGTH, val listen
             return ""
         }
 
-        val source: CharSequence = source.subSequence(start, end)
+        // bug fixed.
+        // val source: CharSequence = source.subSequence(start, end)
         var sum = Utils.calcTextLength(dest as CharSequence, dstart, dend) + Utils.calcTextLength(source) - maxLength
         if (sum > 0) {
-            // 输入字符超过了限制，截取
             val delete = Utils.getDeleteIndex(source, 0, source.length, sum)
-            if (delete >= 0) {
-                listener?.onTextLengthOutOfLimit()
-                return if (delete > 0) source.subSequence(0, delete) else ""
-            }
+            listener?.onTextLengthOutOfLimit()
+            // 输入字符超过了限制，截取
+            return if (delete > 0) source.subSequence(0, delete) else ""
         }
 
         // 没有超过限制，直接返回source

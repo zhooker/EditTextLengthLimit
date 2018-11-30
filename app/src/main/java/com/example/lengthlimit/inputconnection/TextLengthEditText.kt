@@ -44,12 +44,10 @@ class TextLengthEditText : AppCompatEditText, TextLengthListener {
             if (count + destCount > maxLength) {
                 // 超过了sum个字符，需要截取
                 var sum = count + destCount - maxLength
-                // 输入字符超过了限制，截取
                 val delete = Utils.getDeleteIndex(source, 0, source.length, sum)
-                if (delete >= 0) {
-                    listener?.onTextLengthOutOfLimit()
-                    return super.commitText(if (delete > 0) source.subSequence(0, delete) else "", newCursorPosition)
-                }
+                listener?.onTextLengthOutOfLimit()
+                // 输入字符超过了限制，截取
+                return super.commitText(if (delete > 0) source.subSequence(0, delete) else "", newCursorPosition)
             }
             return super.commitText(source, newCursorPosition)
         }

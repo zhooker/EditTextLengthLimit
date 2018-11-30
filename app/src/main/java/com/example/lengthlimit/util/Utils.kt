@@ -19,7 +19,7 @@ object Utils {
      */
     @JvmStatic
     fun calcTextLength(charSequence: CharSequence?): Int {
-        if (charSequence.isNullOrBlank()) {
+        if (charSequence.isNullOrEmpty()) {
             return 0;
         }
 
@@ -37,7 +37,7 @@ object Utils {
     fun calcTextLength(source: CharSequence, dstart: Int, dend: Int): Int {
         var count = 0
         source.forEachIndexed { index, c ->
-            if (dstart == dend || index !in dstart..dend) {
+            if (dstart == dend || index !in dstart until dend) {
                 count += Utils.getCharTextCount(c)
             }
         }
@@ -60,7 +60,7 @@ object Utils {
             }
         }
 
-        return -1
+        return 0
     }
 }
 
